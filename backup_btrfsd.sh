@@ -12,7 +12,7 @@ source "${libDir}/libdaemon.sh" "${libDir}"
 
 #===== Option Variables =====#
 declare -- commDir='/run/backup_btrfsd'
-declare -- accessGrp='backup_btrfs'
+declare -- accessGrp
 
 #===== Setting Trap =====#
 function kill_all_children()
@@ -49,12 +49,12 @@ do
 	case "${1}" in
 		'-c' )
 			shift
-			commDir="${1-NODEF}"
+			commDir="${1}"
 			;;
 
 		'-g' )
 			shift
-			accessGrp="${1-NODEF}"
+			accessGrp="${1}"
 			;;
 
 		* )
@@ -65,12 +65,19 @@ do
 	shift
 done
 
-if [[ (${commDir} == NODEF) || (${accessGrp} == NODEF) ]]
+if [[ ${accessGrp:-UNDEF} == UNDEF ]]
 then
-	error <<< 'Missing arguments.'
+	error <<< '"-g" must be set.'
 	exit 1
 fi
 
+message <<EOS
+Option summary is as follows:
+ -c ${commDir}
+ -g ${accessGrp}
+EOS
+
+# Create directory for communication
 if [ ! -d "${commDir}" ]
 then
 	message <<< "Create a directory for connection at ${commDir}."
@@ -79,6 +86,7 @@ then
 	install -m 770 -o 'root' -g "${accessGrp}" -d "${commDir}"
 fi
 
+# Main loop
 while read touchedFile
 do
 	pipePath="${commDir}/${touchedFile}"

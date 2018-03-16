@@ -14,9 +14,9 @@ source "${libDir}/libclient.sh" "${libDir}"
 source "${libDir}/libmessages.sh"
 
 #===== Option Variables =====#
-declare -- configFilePath
+declare -- configFilePath='/etc/backup_btrfs.conf'
 declare -- userWhenSsh
-declare -- commDir
+declare -- commDir='/run/backup_btrfs'
 
 
 #===== Trap Setting =====#
@@ -75,9 +75,9 @@ do
 	shift
 done
 
-if [[ (${commDir:-UNDEF} == UNDEF) || (${configFilePath:-UNDEF} == UNDEF) || (${userWhenSsh:-UNDEF} == UNDEF) ]]
+if [[ ${userWhenSsh:-UNDEF} == UNDEF ]]
 then
-	error <<< 'All of "-c", "-C", and "-u" must be set.'
+	error <<< '"-u" must be set.'
 	exit 1
 fi
 
