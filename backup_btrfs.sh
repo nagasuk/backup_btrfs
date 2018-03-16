@@ -10,6 +10,7 @@ readonly -- thisScriptDir="$(cd "$(dirname "${0}")"; pwd)"
 readonly -- libDir="${thisScriptDir}/libbackup_btrfs.d"
 
 #===== Include Libraries =====#
+source "${libDir}/libversion.sh"
 source "${libDir}/libclient.sh" "${libDir}"
 source "${libDir}/libmessages.sh"
 
@@ -47,6 +48,11 @@ declare -- pipePath
 declare -- targetPathInfo
 declare -i numBackups
 declare -- isWholeBackup
+
+message <<EOS
+This is "$(printVersion 'backup_btrfs.sh (client tool)')".
+Main process start.
+EOS
 
 ## Analizing arguments
 while (( ${#} > 0 ))

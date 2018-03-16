@@ -7,6 +7,7 @@ readonly -- thisScriptDir="$(cd "$(dirname "${0}")"; pwd)"
 readonly -- libDir="${thisScriptDir}/libbackup_btrfs.d"
 
 #===== Include Libraries =====#
+source "${libDir}/libversion.sh"
 source "${libDir}/libmessages.sh"
 source "${libDir}/libdaemon.sh" "${libDir}"
 
@@ -34,6 +35,8 @@ function atexit()
 	set +e
 	kill_all_children "${$}" "${$}"
 	test -d "${commDir}" && rm -rf "${commDir}"
+
+	message <<< 'Finalization to finish backup daemon complete.'
 }
 trap atexit EXIT TERM
 trap 'trap - EXIT TERM; atexit; exit 1' INT PIPE
@@ -42,6 +45,11 @@ trap 'trap - EXIT TERM; atexit; exit 1' INT PIPE
 ## Temporally variables
 declare -- touchedFile
 declare -- pipePath
+
+message <<EOS
+This is "$(printVersion 'backup_btrfsd.sh (backup daemon)')".
+Main process start.
+EOS
 
 ## Option Analyzing
 while (( ${#} > 0 ))
